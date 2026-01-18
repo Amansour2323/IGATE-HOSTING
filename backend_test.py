@@ -334,6 +334,145 @@ class IgateHostAPITester:
             self.log_test("Admin Messages", False, str(e))
             return False
 
+    def test_admin_sales_report(self):
+        """Test admin sales report with date filtering"""
+        try:
+            # Test with last 30 days
+            from_date = "2024-01-01T00:00:00Z"
+            to_date = "2024-12-31T23:59:59Z"
+            
+            response = self.session.get(f"{self.api_url}/admin/sales-report?from_date={from_date}&to_date={to_date}")
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                report = response.json()
+                details += f", Total Sales: {report.get('total_sales', 0)}, Orders: {report.get('orders_count', 0)}"
+                details += f", Paid Orders: {report.get('paid_orders', 0)}, Daily Breakdown: {len(report.get('daily_breakdown', []))}"
+            
+            self.log_test("Admin Sales Report", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Admin Sales Report", False, str(e))
+            return False
+
+    def test_admin_settings_get(self):
+        """Test getting admin settings"""
+        try:
+            response = self.session.get(f"{self.api_url}/admin/settings")
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                settings = response.json()
+                details += f", Kashier Mode: {settings.get('kashier_mode', 'N/A')}"
+                details += f", Tax Enabled: {settings.get('tax_enabled', False)}"
+                details += f", Company: {settings.get('company_name', 'N/A')}"
+            
+            self.log_test("Admin Settings GET", success, details)
+            return success, settings if success else {}
+        except Exception as e:
+            self.log_test("Admin Settings GET", False, str(e))
+            return False, {}
+
+    def test_admin_settings_update(self):
+        """Test updating admin settings"""
+        try:
+            settings_data = {
+                "kashier_merchant_id": "MID-TEST-123",
+                "kashier_api_key": "test-api-key-12345",
+                "kashier_mode": "sandbox",
+                "tax_enabled": True,
+                "tax_percentage": 14,
+                "company_name": "igate",
+                "website_name": "Igate-host",
+                "support_email": "support@igate-host.com",
+                "support_phone": "+20 100 123 4567"
+            }
+            
+            response = self.session.put(f"{self.api_url}/admin/settings", json=settings_data)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                details += f", Message: {data.get('message', 'N/A')}"
+            
+            self.log_test("Admin Settings UPDATE", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Admin Settings UPDATE", False, str(e))
+            return False
+
+    def test_kashier_connection(self):
+        """Test Kashier connection test endpoint"""
+        try:
+            response = self.session.post(f"{self.api_url}/admin/settings/test-kashier")
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                details += f", Connected: {data.get('connected', False)}"
+                details += f", Mode: {data.get('mode', 'N/A')}"
+            
+            self.log_test("Kashier Connection Test", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Kashier Connection Test", False, str(e))
+            return False
+
+    def test_admin_products_crud(self):
+        """Test admin products CRUD operations"""
+        try:
+            # Test creating a product
+            product_data = {
+                "name_ar": "منتج تجريبي",
+                "name_en": "Test Product",
+                "description_ar": "وصف المنتج التجريبي",
+                "description_en": "Test product description",
+                "category": "hosting",
+                "price_monthly": 99,
+                "price_yearly": 999,
+                "features": ["Feature 1", "Feature 2", "Feature 3"],
+                "is_popular": False
+            }
+            
+            # Create product
+            response = self.session.post(f"{self.api_url}/admin/products", json=product_data)
+            create_success = response.status_code == 200
+            details = f"Create Status: {response.status_code}"
+            
+            if create_success:
+                created_product = response.json()
+                product_id = created_product.get('product_id')
+                details += f", Product ID: {product_id}"
+                
+                # Test updating the product
+                update_data = {
+                    "name_ar": "منتج تجريبي محدث",
+                    "price_monthly": 149
+                }
+                
+                update_response = self.session.put(f"{self.api_url}/admin/products/{product_id}", json=update_data)
+                update_success = update_response.status_code == 200
+                details += f", Update Status: {update_response.status_code}"
+                
+                # Test deleting the product
+                delete_response = self.session.delete(f"{self.api_url}/admin/products/{product_id}")
+                delete_success = delete_response.status_code == 200
+                details += f", Delete Status: {delete_response.status_code}"
+                
+                overall_success = create_success and update_success and delete_success
+            else:
+                overall_success = False
+            
+            self.log_test("Admin Products CRUD", overall_success, details)
+            return overall_success
+        except Exception as e:
+            self.log_test("Admin Products CRUD", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend tests"""
         print("🚀 Starting Igate-host Backend API Tests")
