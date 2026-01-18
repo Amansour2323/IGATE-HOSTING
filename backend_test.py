@@ -509,6 +509,15 @@ class IgateHostAPITester:
             self.test_admin_invoices()
             self.test_admin_messages()
             
+            # NEW ADMIN FEATURES TESTING
+            print("\n🔧 Testing New Admin Features...")
+            self.test_admin_sales_report()
+            settings_success, settings = self.test_admin_settings_get()
+            if settings_success:
+                self.test_admin_settings_update()
+            self.test_kashier_connection()
+            self.test_admin_products_crud()
+            
             # Order and payment flow (requires user login)
             if self.user_token:
                 order_success, order = self.test_create_order(products)
