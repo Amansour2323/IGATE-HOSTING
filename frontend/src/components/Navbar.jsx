@@ -19,6 +19,7 @@ const Navbar = () => {
 
   const navLinks = [
     { path: "/", label: "الرئيسية" },
+    { path: "/plans", label: "الباقات" },
     { path: "/about", label: "من نحن" },
     { path: "/contact", label: "تواصل معنا" },
   ];
