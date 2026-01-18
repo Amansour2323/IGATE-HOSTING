@@ -835,6 +835,150 @@ async def get_admin_stats(admin: User = Depends(get_admin_user)):
         "total_revenue": total_revenue
     }
 
+# ============== SALES REPORT ROUTES ==============
+@api_router.get("/admin/sales-report")
+async def get_sales_report(
+    from_date: str,
+    to_date: str,
+    admin: User = Depends(get_admin_user)
+):
+    """Get detailed sales report for a date range"""
+    try:
+        from_dt = datetime.fromisoformat(from_date.replace('Z', '+00:00'))
+        to_dt = datetime.fromisoformat(to_date.replace('Z', '+00:00'))
+    except:
+        raise HTTPException(status_code=400, detail="Invalid date format")
+    
+    # Query orders in date range
+    query = {
+        "created_at": {
+            "$gte": from_dt.isoformat(),
+            "$lte": to_dt.isoformat()
+        }
+    }
+    
+    orders = await db.orders.find(query, {"_id": 0}).to_list(1000)
+    
+    # Calculate stats
+    total_sales = sum(o["amount"] for o in orders if o.get("payment_status") == PaymentStatus.PAID.value)
+    orders_count = len(orders)
+    paid_orders = len([o for o in orders if o.get("payment_status") == PaymentStatus.PAID.value])
+    pending_orders = len([o for o in orders if o.get("payment_status") == PaymentStatus.PENDING.value])
+    average_order_value = total_sales / paid_orders if paid_orders > 0 else 0
+    
+    # Get invoices count
+    invoices_count = await db.invoices.count_documents({
+        "created_at": {"$gte": from_dt.isoformat(), "$lte": to_dt.isoformat()}
+    })
+    
+    # Daily breakdown
+    daily_data = {}
+    for order in orders:
+        if order.get("payment_status") == PaymentStatus.PAID.value:
+            order_date = order["created_at"][:10]  # Get YYYY-MM-DD
+            if order_date not in daily_data:
+                daily_data[order_date] = {"orders": 0, "amount": 0}
+            daily_data[order_date]["orders"] += 1
+            daily_data[order_date]["amount"] += order["amount"]
+    
+    daily_breakdown = [
+        {"date": date, "orders": data["orders"], "amount": data["amount"]}
+        for date, data in sorted(daily_data.items(), reverse=True)
+    ]
+    
+    return {
+        "total_sales": total_sales,
+        "orders_count": orders_count,
+        "paid_orders": paid_orders,
+        "pending_orders": pending_orders,
+        "average_order_value": round(average_order_value, 2),
+        "invoices_count": invoices_count,
+        "daily_breakdown": daily_breakdown,
+        "from_date": from_date,
+        "to_date": to_date
+    }
+
+# ============== SETTINGS ROUTES ==============
+class SettingsModel(BaseModel):
+    kashier_merchant_id: Optional[str] = ""
+    kashier_api_key: Optional[str] = ""
+    kashier_mode: Optional[str] = "sandbox"
+    tax_enabled: Optional[bool] = False
+    tax_percentage: Optional[float] = 14
+    company_name: Optional[str] = "igate"
+    website_name: Optional[str] = "Igate-host"
+    support_email: Optional[str] = "support@igate-host.com"
+    support_phone: Optional[str] = "+20 100 123 4567"
+
+@api_router.get("/admin/settings")
+async def get_settings(admin: User = Depends(get_admin_user)):
+    """Get current settings"""
+    settings_doc = await db.settings.find_one({"type": "global"}, {"_id": 0})
+    
+    if not settings_doc:
+        # Return defaults
+        settings_doc = {
+            "kashier_merchant_id": KASHIER_MERCHANT_ID,
+            "kashier_api_key": "***" if KASHIER_API_KEY else "",
+            "kashier_mode": KASHIER_MODE,
+            "kashier_connected": bool(KASHIER_MERCHANT_ID and KASHIER_API_KEY),
+            "tax_enabled": False,
+            "tax_percentage": 14,
+            "company_name": "igate",
+            "website_name": "Igate-host",
+            "support_email": "support@igate-host.com",
+            "support_phone": "+20 100 123 4567"
+        }
+    else:
+        # Mask API key
+        if settings_doc.get("kashier_api_key"):
+            settings_doc["kashier_api_key"] = "***" + settings_doc["kashier_api_key"][-4:] if len(settings_doc.get("kashier_api_key", "")) > 4 else "***"
+        settings_doc["kashier_connected"] = bool(settings_doc.get("kashier_merchant_id") and settings_doc.get("kashier_api_key"))
+    
+    return settings_doc
+
+@api_router.put("/admin/settings")
+async def update_settings(settings: SettingsModel, admin: User = Depends(get_admin_user)):
+    """Update settings"""
+    settings_dict = settings.model_dump()
+    
+    # Don't update API key if it's masked
+    if settings_dict.get("kashier_api_key", "").startswith("***"):
+        existing = await db.settings.find_one({"type": "global"}, {"_id": 0})
+        if existing:
+            settings_dict["kashier_api_key"] = existing.get("kashier_api_key", "")
+    
+    settings_dict["type"] = "global"
+    settings_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.settings.update_one(
+        {"type": "global"},
+        {"$set": settings_dict},
+        upsert=True
+    )
+    
+    return {"message": "Settings updated successfully"}
+
+@api_router.post("/admin/settings/test-kashier")
+async def test_kashier_connection(admin: User = Depends(get_admin_user)):
+    """Test Kashier API connection"""
+    settings_doc = await db.settings.find_one({"type": "global"}, {"_id": 0})
+    
+    merchant_id = settings_doc.get("kashier_merchant_id") if settings_doc else KASHIER_MERCHANT_ID
+    api_key = settings_doc.get("kashier_api_key") if settings_doc else KASHIER_API_KEY
+    mode = settings_doc.get("kashier_mode", "sandbox") if settings_doc else KASHIER_MODE
+    
+    if not merchant_id or not api_key:
+        return {"connected": False, "error": "Missing credentials"}
+    
+    # For now, we just check if credentials are provided
+    # In production, you would make a test API call to Kashier
+    return {
+        "connected": True,
+        "merchant_id": merchant_id,
+        "mode": mode
+    }
+
 # ============== SEED DATA ==============
 @api_router.post("/seed")
 async def seed_data():
