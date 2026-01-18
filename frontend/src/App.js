@@ -6,6 +6,7 @@ import { Toaster, toast } from "sonner";
 
 // Pages
 import HomePage from "./pages/HomePage";
+import PlansPage from "./pages/PlansPage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import LoginPage from "./pages/LoginPage";
@@ -166,6 +167,7 @@ function AppRouter() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/plans" element={<PlansPage />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/login" element={<LoginPage />} />
