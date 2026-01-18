@@ -3,7 +3,7 @@ import { useAuth } from "../../App";
 import { Button } from "../../components/ui/button";
 import { 
   Server, LayoutDashboard, Package, ShoppingCart, FileText, 
-  MessageSquare, LogOut, ChevronLeft, Menu, X, Home 
+  MessageSquare, LogOut, ChevronLeft, Menu, X, Home, Settings 
 } from "lucide-react";
 import { useState } from "react";
 
@@ -18,6 +18,7 @@ const AdminLayout = ({ children }) => {
     { path: "/admin/orders", label: "الطلبات", icon: ShoppingCart },
     { path: "/admin/invoices", label: "الفواتير", icon: FileText },
     { path: "/admin/messages", label: "الرسائل", icon: MessageSquare },
+    { path: "/admin/settings", label: "الإعدادات", icon: Settings },
   ];
 
   const isActive = (path, exact = false) => {
