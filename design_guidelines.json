@@ -1,0 +1,156 @@
+{
+  "project_name": "Igate-host",
+  "design_philosophy": {
+    "persona": "E1: The Anti-AI Designer",
+    "core_principles": [
+      "Fusion over Imitation: Mix Hosting reliability with SaaS speed aesthetics.",
+      "Emotion First: Trust (White/Blue) for Marketing, Focus (Dark/Slate) for Dashboard.",
+      "RTL First: Every component must be designed for Arabic reading flow (Right-to-Left).",
+      "Content is King: Typography (Cairo) leads the design."
+    ],
+    "archetype": "The Performance Pro (Tech Variant)",
+    "vibe": "Reliable, Fast, Secure, Egyptian-Global"
+  },
+  "typography": {
+    "font_family": {
+      "primary": "Cairo, sans-serif",
+      "secondary": "Inter, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "usage": {
+      "headings": "Cairo (Weights: 700, 800) - Bold, Geometric, Modern Arabic.",
+      "body": "Cairo (Weights: 400, 500) - High legibility.",
+      "numbers_and_code": "Inter or JetBrains Mono - For pricing, IPs, and server stats."
+    },
+    "scale": {
+      "h1": "text-4xl md:text-6xl font-bold tracking-tight",
+      "h2": "text-3xl md:text-5xl font-bold tracking-tight",
+      "h3": "text-2xl md:text-3xl font-semibold",
+      "body": "text-base md:text-lg leading-relaxed"
+    }
+  },
+  "colors": {
+    "palette": {
+      "primary": {
+        "DEFAULT": "hsl(221, 83%, 53%)", 
+        "foreground": "hsl(210, 40%, 98%)",
+        "description": "Electric Blue - Trust & Technology"
+      },
+      "secondary": {
+        "DEFAULT": "hsl(215, 27.9%, 16.9%)",
+        "foreground": "hsl(210, 40%, 98%)",
+        "description": "Deep Slate - Professionalism & Depth"
+      },
+      "accent": {
+        "DEFAULT": "hsl(189, 94%, 43%)",
+        "foreground": "hsl(210, 40%, 98%)",
+        "description": "Cyan - Speed & Uptime"
+      },
+      "background": "hsl(0, 0%, 100%)",
+      "foreground": "hsl(222.2, 84%, 4.9%)",
+      "muted": "hsl(210, 40%, 96.1%)",
+      "border": "hsl(214.3, 31.8%, 91.4%)"
+    },
+    "gradients": {
+      "hero": "bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900",
+      "card_hover": "hover:bg-gradient-to-br hover:from-white hover:to-blue-50",
+      "text_gradient": "bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-500"
+    }
+  },
+  "layout_strategy": {
+    "rtl_rules": [
+      "CRITICAL: Add 'dir=rtl' to the root HTML tag.",
+      "Use logical properties: 'ms-' (margin-start) instead of 'ml-', 'me-' (margin-end) instead of 'mr-'.",
+      "Use 'ps-' (padding-start) and 'pe-' (padding-end).",
+      "Icons: Flip directional icons (arrows, chevrons) using 'rtl:rotate-180'."
+    ],
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "spacing": "Generous. Use p-8 to p-12 for sections. Gap-8 for grids.",
+    "grid_system": "Bento Grid (Mode A) for Features, High Density (Mode B) for Dashboard."
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8 rounded-md font-medium transition-all shadow-lg shadow-blue-500/20",
+      "secondary": "bg-secondary text-secondary-foreground hover:bg-secondary/80 h-11 px-8 rounded-md font-medium",
+      "outline": "border-2 border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 px-8 rounded-md font-medium"
+    },
+    "cards": {
+      "marketing": "bg-card text-card-foreground rounded-xl border border-border/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1",
+      "dashboard": "bg-card text-card-foreground rounded-lg border border-border shadow-none"
+    },
+    "inputs": {
+      "style": "h-11 rounded-md border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-right"
+    }
+  },
+  "visual_enhancers": {
+    "glassmorphism": "backdrop-blur-xl bg-white/70 border border-white/20 shadow-sm (Use for sticky navs)",
+    "grid_borders": "Use 'border-collapse' logic for dashboard stats to look technical.",
+    "glow_effects": "Use subtle blue glows behind hero images or key pricing cards."
+  },
+  "images": {
+    "hero_bg": {
+      "url": "https://images.unsplash.com/photo-1645477704075-cb3d14b349ee?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "alt": "Modern Data Center with Blue Neon Lights",
+      "usage": "Hero section background or side visual with overlay."
+    },
+    "support_agent": {
+      "url": "https://images.unsplash.com/photo-1608280200244-fae9946df695?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "alt": "Smiling Customer Support Agent",
+      "usage": "Contact Us page or '24/7 Support' section."
+    },
+    "team_meeting": {
+      "url": "https://images.unsplash.com/photo-1758873271805-1ff103e28558?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "alt": "Modern Tech Team Meeting",
+      "usage": "About Us page."
+    },
+    "placeholders": {
+      "logo": "https://placehold.co/200x60/2563EB/FFFFFF?text=Igate-host",
+      "partner_1": "https://placehold.co/150x50/e2e8f0/475569?text=Partner+1",
+      "partner_2": "https://placehold.co/150x50/e2e8f0/475569?text=Partner+2"
+    }
+  },
+  "pages_structure": {
+    "home": [
+      "Hero Section (Slider/Video, Value Prop, CTA)",
+      "Domain Search Bar (Input group)",
+      "Hosting Plans (Pricing Cards - 3 tiers)",
+      "Why Choose Us (Bento Grid of features)",
+      "Services Overview (Web Design, Marketing)",
+      "Trust Indicators (Stats, Partners)",
+      "CTA Footer"
+    ],
+    "about": [
+      "Mission & Vision (Split layout)",
+      "Our Story",
+      "Team Section"
+    ],
+    "contact": [
+      "Contact Info (Cards)",
+      "Contact Form (Shadcn Form)",
+      "Map/Location"
+    ],
+    "dashboard": [
+      "Sidebar Navigation",
+      "Stats Overview (Grid)",
+      "Active Services Table",
+      "Recent Invoices Table"
+    ]
+  },
+  "instructions_to_main_agent": [
+    "1. INSTALL FONTS: Add '@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;700;800&display=swap');' to index.css.",
+    "2. SET RTL: Ensure the <html> tag has dir='rtl' and lang='ar'.",
+    "3. TAILWIND CONFIG: Update font-family to use 'Cairo' as default sans.",
+    "4. SHADCN: Customize components to match the 'Electric Blue' and 'Slate' palette.",
+    "5. ICONS: Use Lucide-react. Remember to flip directional icons for RTL.",
+    "6. ANIMATIONS: Use 'framer-motion' for smooth entrance effects (fade-up, slide-in).",
+    "7. MOCK DATA: Create realistic Arabic mock data for plans (e.g., 'استضافة مشتركة', 'سيرفرات خاصة')."
+  ],
+  "universal_guidelines": [
+    "Do not use generic centered layouts.",
+    "Create depth through layered design elements.",
+    "Use glass-morphism effects with backdrop filters.",
+    "Every interaction needs micro-animations.",
+    "Use 2-3x more spacing than feels comfortable.",
+    "All interactive elements MUST include data-testid."
+  ]
+}
